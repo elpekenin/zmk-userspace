@@ -17,11 +17,13 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 
 #include "elpekenin/__dts/behaviors/gpio.h"
 
+#define GPIO_LED_NODE DT_INST(0, gpio_leds)
+
 #define GET_GPIO_SPEC_AND_COMMA(node_id) \
     GPIO_DT_SPEC_GET(node_id, gpios),
 
 static const struct gpio_dt_spec gpios[] = {
-    DT_FOREACH_CHILD(DT_NODELABEL(gpios), GET_GPIO_SPEC_AND_COMMA)
+    DT_FOREACH_CHILD(GPIO_LED_NODE, GET_GPIO_SPEC_AND_COMMA)
 };
 
 #define N_GPIO ARRAY_SIZE(gpios)

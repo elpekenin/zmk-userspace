@@ -8,6 +8,7 @@
 
 / {
     behaviors {
+        /* by doing this: not used -> removed -> not in DTS -> related code not compiled thanks to build-system check */
         /omit-if-no-ref/ gpio: gpio {
             compatible = "elpekenin,behavior-gpio";
             #binding-cells = <2>; /* pin_no, state */
