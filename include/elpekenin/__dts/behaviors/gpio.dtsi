@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2024 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "elpekenin/__dts/behaviors/gpio.h"
+
+/ {
+    behaviors {
+        /omit-if-no-ref/ gpio: gpio {
+            compatible = "elpekenin,behavior-gpio";
+            #binding-cells = <2>; /* pin_no, state */
+        };
+    };
+};

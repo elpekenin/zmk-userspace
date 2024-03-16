@@ -1,0 +1,7 @@
+config ELPEKENIN_LAYER_CALLBACK
+    bool
+    default y
+    depends on DT_HAS_ELPEKENIN_LAYER_CALLBACK_ENABLED
+
+rsource "Kconfig.behaviors"
+

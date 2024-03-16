@@ -1,0 +1,4 @@
+config ELPEKENIN_BEHAVIOR_GPIO
+    bool
+    default y
+    depends on DT_HAS_ELPEKENIN_BEHAVIOR_GPIO_ENABLED
