@@ -23,7 +23,7 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/virtual_key_position.h>
 
 #if DT_HAS_COMPAT_STATUS_OKAY(zmk_combos)
-#define ADD_ONE() + 1
+#define ADD_ONE(_) + 1
 #define ZMK_COMBOS_LEN (0 DT_FOREACH_CHILD(DT_INST(0, zmk_combos), ADD_ONE))
 #else
 #define ZMK_COMBOS_LEN 0
