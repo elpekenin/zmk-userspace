@@ -17,56 +17,54 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/behavior.h>
 #include <zmk/keymap.h>
 
-#define MAGIC_FLAG (0xF00BA5)
-#define MAGIC_MASK (0xFFFFFF00)
-
-static uint32_t masked_value = 0;
+static uint8_t default_layer_no = 0;
 
 static int default_layer_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) { 
-    if (sizeof(masked_value) != len) {
-        return -EINVAL;
-    }
-
     const char *next;
-    if (!settings_name_steq(name, "val", &next) || next) {
-        return -ENOENT;
+    int rc;
+
+    if (settings_name_steq(name, "value", &next) && !next) {
+        if (len != sizeof(default_layer_no)) {
+            return -EINVAL;
+        }
+
+        rc = read_cb(cb_arg, &default_layer_no, sizeof(default_layer_no));
+        if (rc >= 0) {
+            return 0;
+        }
+
+        return rc;
     }
 
-    int ret = read_cb(cb_arg, &masked_value, sizeof(masked_value));
-    if (ret < 0) {
-        return ret;
-    }
-
-    return 0; // successful read
-}
-
-typedef int (*storage_fn_t)(const char *name, const void *val, size_t len);
-static int default_layer_export(storage_fn_t storage_cb) {
-    return storage_cb("def/val", &masked_value, sizeof(masked_value));
+    return -ENOENT;
 }
 
 struct settings_handler default_layer_conf = {
-    .name = "def",
+    .name = "default_layer",
     .h_set = default_layer_set,
-    .h_export = default_layer_export,
 };
+
+static int default_layer_init(void) {
+    settings_subsys_init();
+
+    int ret = settings_register(&default_layer_conf);
+    if (ret) {
+        LOG_ERR("Could not register default layer settings (%d).", ret);
+        return ret;
+    }
+
+    settings_load_subtree("default_layer");
+    zmk_keymap_layer_to(default_layer_no);
+
+    return 0;
+}
+SYS_INIT(default_layer_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 
 // ^ settings setup
 // -----
-// v actual behavior 
+// v actual behavior
 
-static int behavior_default_layer_init(__unused const struct device *dev) {
-    settings_subsys_init();
-    settings_register(&default_layer_conf);
-    settings_load();
-
-    if ((masked_value & MAGIC_MASK) != MAGIC_FLAG) {
-        return 0; // no flag -> nothing to be done
-    }
-
-    uint8_t layer = masked_value & 0xFF;
-    (void)zmk_keymap_layer_activate(layer);
-
+static int behavior_default_layer_init(const struct device *dev) {
     return 0;
 }
 
@@ -82,11 +80,10 @@ static int on_keymap_binding_pressed(
         return -EINVAL;
     }
 
-    (void)zmk_keymap_layer_activate(binding->param1);
+    zmk_keymap_layer_to(binding->param1);
 
-    // TODO: handle error?
-    masked_value = ((MAGIC_FLAG) << 8) | binding->param1;
-    settings_save_one("def/val", &masked_value, sizeof(masked_value));
+    default_layer_no = binding->param1;
+    settings_save_one("default_layer/value", &default_layer_no, sizeof(default_layer_no));
 
     return 0;
 }
