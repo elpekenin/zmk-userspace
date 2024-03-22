@@ -1,1 +1,2 @@
 #include "elpekenin/__dts/behaviors/gpio.dtsi"
+#include "elpekenin/__dts/behaviors/default_layer.dtsi"

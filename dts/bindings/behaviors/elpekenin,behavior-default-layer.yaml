@@ -1,0 +1,8 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Behavior to persistently change layer
+
+compatible: "elpekenin,behavior-default-layer"
+
+include: one_param.yaml

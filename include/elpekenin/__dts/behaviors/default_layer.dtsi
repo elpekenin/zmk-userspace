@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2024 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/ {
+    behaviors {
+        /* by doing this: not used -> removed -> not in DTS -> related code not compiled thanks to build-system check */
+        /omit-if-no-ref/ df: default_layer {
+            compatible = "elpekenin,behavior-default-layer";
+            #binding-cells = <1>; /* layer_no */
+        };
+    };
+};

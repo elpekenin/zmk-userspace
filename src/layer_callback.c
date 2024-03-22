@@ -22,7 +22,7 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 /* Hack NOT to edit ZMK internals */
 #include <zmk/virtual_key_position.h>
 
-#if DT_HAS_COMPAT_STATUS_OKAY(zmk_combos)
+#if DT_HAS_COMPAT_STATUS_OKAY(zmk_combos) && FALSE
 #define ADD_ONE(_) + 1
 #define ZMK_COMBOS_LEN (0 DT_FOREACH_CHILD(DT_INST(0, zmk_combos), ADD_ONE))
 #else

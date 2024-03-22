@@ -11,6 +11,7 @@ zephyr_library_sources(src/elpekenin.c)
 
 # behaviors
 zephyr_library_sources_ifdef(CONFIG_ELPEKENIN_BEHAVIOR_GPIO src/behaviors/behavior_gpio.c)
+zephyr_library_sources_ifdef(CONFIG_ELPEKENIN_BEHAVIOR_DEFAULT_LAYER src/behaviors/behavior_default_layer.c)
 
 # features
 zephyr_library_sources_ifdef(CONFIG_ELPEKENIN_LAYER_CALLBACK src/layer_callback.c)

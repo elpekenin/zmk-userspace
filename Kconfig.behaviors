@@ -2,3 +2,8 @@ config ELPEKENIN_BEHAVIOR_GPIO
     bool
     default y
     depends on DT_HAS_ELPEKENIN_BEHAVIOR_GPIO_ENABLED
+
+config ELPEKENIN_BEHAVIOR_DEFAULT_LAYER
+    bool
+    default y
+    depends on DT_HAS_ELPEKENIN_BEHAVIOR_DEFAULT_LAYER_ENABLED
