@@ -17,18 +17,29 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/behavior.h>
 #include <zmk/keymap.h>
 
-static uint8_t default_layer_no = 0;
+static uint8_t __default_layer = 0;
 
-static int default_layer_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) { 
+static inline bool is_valid_layer(uint8_t layer_no) {
+    return layer_no < ZMK_KEYMAP_LAYERS_LEN;
+}
+
+static void default_layer_set(uint8_t layer_no) {
+    __default_layer = layer_no;
+    zmk_keymap_layer_activate(__default_layer);
+    settings_save_one("default_layer/value", &__default_layer, sizeof(__default_layer));
+}
+
+
+static int __settings_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) { 
     const char *next;
     int rc;
 
     if (settings_name_steq(name, "value", &next) && !next) {
-        if (len != sizeof(default_layer_no)) {
+        if (len != sizeof(__default_layer)) {
             return -EINVAL;
         }
 
-        rc = read_cb(cb_arg, &default_layer_no, sizeof(default_layer_no));
+        rc = read_cb(cb_arg, &__default_layer, sizeof(__default_layer));
         if (rc >= 0) {
             return 0;
         }
@@ -41,7 +52,7 @@ static int default_layer_set(const char *name, size_t len, settings_read_cb read
 
 struct settings_handler default_layer_conf = {
     .name = "default_layer",
-    .h_set = default_layer_set,
+    .h_set = __settings_set,
 };
 
 static int default_layer_init(void) {
@@ -54,7 +65,14 @@ static int default_layer_init(void) {
     }
 
     settings_load_subtree("default_layer");
-    zmk_keymap_layer_to(default_layer_no);
+
+    if (!is_valid_layer(__default_layer)) {
+        // this should only happen on first run
+        LOG_ERR("Read: %d, which is invalid. Assigning the setting to 0.", __default_layer);
+        __default_layer = 0;
+    }
+
+    default_layer_set(__default_layer);
 
     return 0;
 }
@@ -65,25 +83,22 @@ SYS_INIT(default_layer_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 // v actual behavior
 
 static int behavior_default_layer_init(const struct device *dev) {
-    return 0;
+    return 0; // no-op
 }
 
 static int on_keymap_binding_pressed(
     struct zmk_behavior_binding *binding,
     struct zmk_behavior_binding_event event
 ) {
-    if (
-        binding->param1 < 0
-        && binding->param1 >= ZMK_KEYMAP_LAYERS_LEN
-    ) {
-        LOG_ERR("Invalid value (%d) for layer number.", binding->param1);
+    uint8_t param = binding->param1;
+
+    if (!is_valid_layer(param)) {
+        LOG_ERR("Invalid value (%d) for layer number.", param);
         return -EINVAL;
-    }
+    };
 
-    zmk_keymap_layer_to(binding->param1);
-
-    default_layer_no = binding->param1;
-    settings_save_one("default_layer/value", &default_layer_no, sizeof(default_layer_no));
+    LOG_INF("Setting default layer to %d.", param);
+    default_layer_set(param);
 
     return 0;
 }
