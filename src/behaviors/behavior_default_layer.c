@@ -18,6 +18,10 @@ LOG_MODULE_DECLARE(elpekenin, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/endpoints.h>
 #include <zmk/keymap.h>
 
+#include <zmk/event_manager.h>
+#include <zmk/events/endpoint_changed.h>
+
+
 struct default_layer_settings_t {
     uint8_t usb[ZMK_ENDPOINT_USB_COUNT];
     uint8_t ble[ZMK_ENDPOINT_BLE_COUNT];
@@ -72,7 +76,7 @@ static int apply_default_layer_config(struct zmk_endpoint_instance endpoint) {
             break;
     }
 
-    int ret = zmk_keymap_layer_activate(layer);
+    int ret = zmk_keymap_layer_to(layer);
     if (ret < 0) {
         LOG_WRN("Could not apply default layer from settings. Perhaps number of layers changed since configuration was saved.");
         return ret;
@@ -122,9 +126,9 @@ static int default_layer_init(void) {
 }
 SYS_INIT(default_layer_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 
-// ^ settings setup
+// ^ configuration-related code
 // -----
-// v actual behavior
+// v behavior
 
 static int behavior_default_layer_init(const struct device *dev) {
     return 0; // no-op
@@ -172,3 +176,20 @@ BEHAVIOR_DT_INST_DEFINE(
     CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,
     &behavior_default_layer_driver_api
 );
+
+// ^ behavior
+// -----
+// v listener for endpoint changes
+
+static int endpoint_changed_cb(const zmk_event_t *eh) {
+    struct zmk_endpoint_changed *evt = as_zmk_endpoint_changed(eh);
+
+    if (evt != NULL) {
+        apply_default_layer_config(evt->endpoint);
+    }
+
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(endpoint, endpoint_changed_cb);
+ZMK_SUBSCRIPTION(endpoint, zmk_endpoint_changed)
