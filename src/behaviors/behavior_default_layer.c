@@ -192,4 +192,4 @@ static int endpoint_changed_cb(const zmk_event_t *eh) {
 }
 
 ZMK_LISTENER(endpoint, endpoint_changed_cb);
-ZMK_SUBSCRIPTION(endpoint, zmk_endpoint_changed)
+ZMK_SUBSCRIPTION(endpoint, zmk_endpoint_changed);
