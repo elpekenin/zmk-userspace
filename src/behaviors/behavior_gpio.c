@@ -29,7 +29,7 @@ static const struct gpio_dt_spec gpios[] = {
 #define N_GPIO ARRAY_SIZE(gpios)
 
 static int behavior_gpio_init(const struct device *dev) {
-    for (uint8_t i = 0; i < N_GPIO, ++i) {
+    for (uint8_t i = 0; i < N_GPIO; ++i) {
         const struct gpio_dt_spec *gpio = &gpios[i];
 
         // initialize pin
