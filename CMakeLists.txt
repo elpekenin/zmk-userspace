@@ -12,6 +12,9 @@ zephyr_library_sources(src/elpekenin.c)  # only defines the logger
 # behaviors
 zephyr_library_sources_ifdef(CONFIG_ELPEKENIN_BEHAVIOR_GPIO src/behaviors/behavior_gpio.c)
 
+# automation
+zephyr_library_sources_ifdef(CONFIG_ELPEKENIN_LOCK_INDICATOR src/lock_indicator.c)
+
 # only on central side (or unibody boards)
 if ((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   # features

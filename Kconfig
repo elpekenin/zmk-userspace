@@ -3,5 +3,10 @@ config ELPEKENIN_LAYER_CALLBACK
     default y
     depends on DT_HAS_ELPEKENIN_LAYER_CALLBACK_ENABLED
 
+config ELPEKENIN_LOCK_INDICATOR
+    bool
+    default y
+    depends on DT_HAS_ELPEKENIN_LOCK_INDICATOR_ENABLED
+
 rsource "Kconfig.behaviors"
 

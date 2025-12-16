@@ -1,0 +1,17 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Turn LEDs on/off based on HID indicators' state
+
+compatible: "elpekenin,lock-indicator"
+
+child-binding:
+  description: "Configuration for an indicator"
+
+  properties:
+    mask:
+      type: int
+      required: true
+    led:
+      type: phandle
+      required: true

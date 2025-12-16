@@ -5,7 +5,6 @@ description: Tap (press and release) behavior(s) when a layer is (de)activated
 
 compatible: "elpekenin,layer-callback"
 
-
 child-binding:
   description: "Configuration for an event on a layer"
 
@@ -22,6 +21,3 @@ child-binding:
     bindings:
       type: phandle-array
       required: true
-
-
-
